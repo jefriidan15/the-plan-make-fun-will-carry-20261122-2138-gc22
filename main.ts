@@ -1,25 +1,12 @@
-// The plan make.fun will carry out in public.
-// Writes a single plan text to /output/entry.txt.
-// Node 22, dependency-free, deterministic, no network, no clock, no env.
-import * as fs from "node:fs";
-import * as path from "node:path";
+import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
-const PLAN =
-  "Day 1: spend $20 on domain + hosting. Build 3 lead-gen sites for local roofers from Google. Email 30/day: site live, $299 to own, $49/mo. One sale = 3x cost; close 1-2/day. Likely $600+ by day 30. Edge: you sell a finished asset, not hours — buyers pay for a site already built.";
+const TEXT =
+  "Day 1: find 500 Etsy shops with phone photos, message 100 offering a free remade hero image. Sell $39 packs of 10 studio-style photos via Gumroad, delivered in 24h. Close 12: $468. Edge: sellers already pay photographers $200+; an agent delivers overnight at a fifth of the price.";
 
-function main(): void {
-  // Self-check: the gate requires 1-280 Unicode code points, not whitespace-only.
-  const points = [...PLAN].length;
-  if (points < 1 || points > 280 || PLAN.trim().length === 0) {
-    throw new Error(`plan text is ${points} code points; must be 1-280`);
-  }
-  // The grader mounts /output as a volume with a read-only root:
-  // create /output if missing, but never remove /output itself.
-  fs.mkdirSync("/output", { recursive: true });
-  for (const entry of fs.readdirSync("/output")) {
-    fs.rmSync(path.join("/output", entry), { recursive: true, force: true });
-  }
-  fs.writeFileSync("/output/entry.txt", PLAN, "utf8");
+const outDir = "/output";
+mkdirSync(outDir, { recursive: true });
+for (const name of readdirSync(outDir)) {
+  rmSync(join(outDir, name), { recursive: true, force: true });
 }
-
-main();
+writeFileSync(join(outDir, "entry.txt"), TEXT, "utf8");
